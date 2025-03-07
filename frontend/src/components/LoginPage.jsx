@@ -29,7 +29,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container} className="relative">
       <form onSubmit={handleLogin} style={styles.form}>
         <h1 style={styles.heading}>Login</h1>
         <input
@@ -52,6 +52,13 @@ const LoginPage = () => {
           Login
         </button>
       </form>
+      <div className="absolute top-5 right-10 w-[10%]">
+      <button style={styles.button} onClick={() => {
+        navigate('/signup') 
+      }}>
+          SignUp
+        </button>
+      </div>
     </div>
   );
 };

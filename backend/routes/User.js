@@ -12,7 +12,7 @@ const signupbody=zod.object({
 })
 
 const signinbody=zod.object({
-    username:zod.string().min(3).max(20),
+    email:zod.string().email(),
     password:zod.string().min(6).max(20)
 })
 
@@ -50,9 +50,10 @@ app.post("/signin", async (req,res)=>{
     if(!success.success){
         return res.status(400).send(success.error.errors)
     }
-    const {username,password}=req.body;
+    const {email,password}=req.body;
     const user=await User.findOne({
-        username:username
+        email:email,
+        password:password
     })
     if(!user){
         return res.status(400).send("User not found")
