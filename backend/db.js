@@ -1,7 +1,9 @@
 const mongoose=require('mongoose')
 
 try{
-    mongoose.connect("mongodb://127.0.0.1:27017/algoarena")
+  // change the mongoDB connection string to use the database, or you could you mine too
+    mongoose.connect("mongodb+srv://vyn_20:EeST3xhUh6vC2r38@algoarena.qpada.mongodb.net/?retryWrites=true&w=majority&appName=AlgoArena")
+    console.log("connected to database");
 }catch(e){
     console.log("Some Error while connecting to Database")
 }
