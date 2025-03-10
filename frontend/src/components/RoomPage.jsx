@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import "../App.css";
+import { io } from 'socket.io-client';
+
 
 const RoomPage = () => {
   const { roomId } = useParams();
@@ -12,6 +14,44 @@ const RoomPage = () => {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [runResult, setRunResult] = useState("");
   const [language] = useState("javascript");
+
+
+  const socketRef = useRef(null); // Create a reference to hold the socket instance
+
+  useEffect(() => {
+    // If socketRef.current is null, create the socket connection
+    if (!socketRef.current) {
+      socketRef.current = io('http://localhost:3000',{
+        query: {username},
+      });
+    }
+
+    // Listen to the 'connect' event once the socket is established
+    socketRef.current.on('connect', () => {
+      console.log(`You have connected to WS with id: ${socketRef.current.id}`);
+    });
+
+    // on any change to code the server is going to broadcast this message
+
+    socketRef.current.on('update-code', (data) => {
+      if(data.roomId == roomId){
+        setCode(data.code);
+      }
+    })
+
+    // Cleanup function to disconnect the socket when the component unmounts
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
+
+  }, [socketRef]); // Empty dependency array to run only once
+
+
+
+
 
   const handleLogout = () => {
     localStorage.removeItem("username");
@@ -63,6 +103,20 @@ const RoomPage = () => {
       });
   };
 
+  const handleCodeChange = (value) => {
+    setCode(value); // Update the state with the new value
+    //console.log(code)
+    socketRef.current.emit('code-update', {
+      roomId : roomId,
+      code: value,
+
+    })
+
+
+  };
+
+  
+
   return (
     <div className="container">
       <div className="navbar">
@@ -98,10 +152,10 @@ const RoomPage = () => {
         </div>
       </div>
 
-      <div class="editorResultWrapper">
+      <div className="editorResultWrapper">
         <div className="editorContainer">
-          <div class="editor-navbar">
-            <span class="file-name">main.js</span>
+          <div className="editor-navbar">
+            <span className="file-name">main.js</span>
             <button className="runButton" onClick={runCode}>
               Run
             </button>
@@ -109,7 +163,9 @@ const RoomPage = () => {
           <CodeMirror
             height="80vh"
             value={code}
-            onChange={(val) => setCode(val)}
+            onChange={(value) => {
+              handleCodeChange(value); // Update state when content changes
+            }}
             extensions={[javascript()]}
             theme="dark"
           />
@@ -122,9 +178,9 @@ const RoomPage = () => {
       </div> */}
 
         <div className="resultContainer">
-          <div class="output-navbar">
-            <span class="output-title">Output</span>
-            <button class="btn clear">Clear</button>
+          <div className="output-navbar">
+            <span className="output-title">Output</span>
+            <button className="btn clear">Clear</button>
           </div>
           <pre className="output">{runResult}</pre>
         </div>
