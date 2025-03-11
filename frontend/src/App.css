@@ -237,3 +237,31 @@
   border-radius: 5px;
   cursor: pointer;
 }
+
+/* for selecting languages */
+.language-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.language-label {
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.language-dropdown {
+  padding: 8px 12px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: none;
+  background-color: #222;
+  color: white;
+  cursor: pointer;
+}
+
+.language-dropdown:hover {
+  background-color: #333;
+}

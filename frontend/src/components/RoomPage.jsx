@@ -3,8 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import "../App.css";
-import { io } from 'socket.io-client';
-
+import { python } from "@codemirror/lang-python";
+import { cpp } from "@codemirror/lang-cpp";
+import { java } from "@codemirror/lang-java";
+import { io } from "socket.io-client";
 
 const RoomPage = () => {
   const { roomId } = useParams();
@@ -13,31 +15,30 @@ const RoomPage = () => {
   const [code, setCode] = useState("// Start coding here!");
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [runResult, setRunResult] = useState("");
-  const [language] = useState("javascript");
-
+  const [language, setLanguage] = useState("javascript");
 
   const socketRef = useRef(null); // Create a reference to hold the socket instance
 
   useEffect(() => {
     // If socketRef.current is null, create the socket connection
     if (!socketRef.current) {
-      socketRef.current = io('http://localhost:3000',{
-        query: {username},
+      socketRef.current = io("http://localhost:3000", {
+        query: { username },
       });
     }
 
     // Listen to the 'connect' event once the socket is established
-    socketRef.current.on('connect', () => {
+    socketRef.current.on("connect", () => {
       console.log(`You have connected to WS with id: ${socketRef.current.id}`);
     });
 
     // on any change to code the server is going to broadcast this message
 
-    socketRef.current.on('update-code', (data) => {
-      if(data.roomId == roomId){
+    socketRef.current.on("update-code", (data) => {
+      if (data.roomId == roomId) {
         setCode(data.code);
       }
-    })
+    });
 
     // Cleanup function to disconnect the socket when the component unmounts
     return () => {
@@ -46,12 +47,7 @@ const RoomPage = () => {
         socketRef.current = null;
       }
     };
-
   }, [socketRef]); // Empty dependency array to run only once
-
-
-
-
 
   const handleLogout = () => {
     localStorage.removeItem("username");
@@ -106,16 +102,27 @@ const RoomPage = () => {
   const handleCodeChange = (value) => {
     setCode(value); // Update the state with the new value
     //console.log(code)
-    socketRef.current.emit('code-update', {
-      roomId : roomId,
+    socketRef.current.emit("code-update", {
+      roomId: roomId,
       code: value,
+    });
 
-    })
-
-
+    const getLanguageExtension = (lang) => {
+      switch (lang) {
+        case "python":
+          return python();
+        case "cpp":
+          return cpp();
+        case "java":
+          return java();
+        default:
+          return javascript();
+      }
+    };
+    const clearOutput = () => {
+      setRunResult(""); // Fix missing clear functionality
+    };
   };
-
-  
 
   return (
     <div className="container">
@@ -156,6 +163,22 @@ const RoomPage = () => {
         <div className="editorContainer">
           <div className="editor-navbar">
             <span className="file-name">main.js</span>
+            <div className="language-selector">
+              <label htmlFor="language-select" className="language-label">
+                Select Language:
+              </label>
+              <select
+                id="language-select"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="language-dropdown"
+              >
+                <option value="javascript">JavaScript</option>
+                <option value="python">Python</option>
+                <option value="cpp">C++</option>
+                <option value="java">Java</option>
+              </select>
+            </div>
             <button className="runButton" onClick={runCode}>
               Run
             </button>
@@ -166,21 +189,16 @@ const RoomPage = () => {
             onChange={(value) => {
               handleCodeChange(value); // Update state when content changes
             }}
-            extensions={[javascript()]}
+            extensions={[getLanguageExtension(language)]}
             theme="dark"
           />
         </div>
-
-        {/* <div className="runButtonContainer">
-        <button className="runButton" onClick={runCode}>
-          Run
-        </button>
-      </div> */}
-
         <div className="resultContainer">
           <div className="output-navbar">
             <span className="output-title">Output</span>
-            <button className="btn clear">Clear</button>
+            <button className="btn clear" onClick={clearOutput}>
+              Clear
+            </button>
           </div>
           <pre className="output">{runResult}</pre>
         </div>
