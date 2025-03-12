@@ -98,7 +98,21 @@ const RoomPage = () => {
         setRunResult("Error executing code");
       });
   };
-
+  const getLanguageExtension = (lang) => {
+    switch (lang) {
+      case "python":
+        return python();
+      case "cpp":
+        return cpp();
+      case "java":
+        return java();
+      default:
+        return javascript();
+    }
+  };
+  const clearOutput = () => {
+    setRunResult(""); // Fix missing clear functionality
+  };
   const handleCodeChange = (value) => {
     setCode(value); // Update the state with the new value
     //console.log(code)
@@ -106,22 +120,6 @@ const RoomPage = () => {
       roomId: roomId,
       code: value,
     });
-
-    const getLanguageExtension = (lang) => {
-      switch (lang) {
-        case "python":
-          return python();
-        case "cpp":
-          return cpp();
-        case "java":
-          return java();
-        default:
-          return javascript();
-      }
-    };
-    const clearOutput = () => {
-      setRunResult(""); // Fix missing clear functionality
-    };
   };
 
   return (
