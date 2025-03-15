@@ -22,7 +22,7 @@ const RoomPage = () => {
   useEffect(() => {
     // If socketRef.current is null, create the socket connection
     if (!socketRef.current) {
-      socketRef.current = io("http://localhost:3000", {
+      socketRef.current = io("https://algoarena-b2np.onrender.com", {
         query: { username },
       });
     }
