@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: 'https://algoarena-b2np.onrender.com', // Backend URL
+  baseURL: `${import.meta.env.VITE_BACKEND_URL}`, // Backend URL
 });
 
 export default instance;

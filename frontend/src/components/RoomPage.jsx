@@ -7,30 +7,36 @@ import { python } from "@codemirror/lang-python";
 import { cpp } from "@codemirror/lang-cpp";
 import { java } from "@codemirror/lang-java";
 import { io } from "socket.io-client";
+import axios from "axios";
+
 
 const RoomPage = () => {
   const { roomId } = useParams();
   const navigate = useNavigate();
   const username = localStorage.getItem("username") || "Guest";
-  const [code, setCode] = useState("// Start coding here!");
+  const [code, setCode] = useState("");
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [runResult, setRunResult] = useState("");
   const [language, setLanguage] = useState("javascript");
 
   const socketRef = useRef(null); // Create a reference to hold the socket instance
 
+  const setInitialCode = async () => {
+    const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/rooms/get-code/${roomId}`);
+    setCode(response.data.iniCode);
+  }
+
+  useEffect(() => {
+    setInitialCode();
+  }, []);
+
   useEffect(() => {
     // If socketRef.current is null, create the socket connection
     if (!socketRef.current) {
-      socketRef.current = io("https://algoarena-b2np.onrender.com", {
+      socketRef.current = io(`${import.meta.env.VITE_BACKEND_URL}`, {
         query: { username },
       });
     }
-
-    // Listen to the 'connect' event once the socket is established
-    socketRef.current.on("connect", () => {
-      console.log(`You have connected to WS with id: ${socketRef.current.id}`);
-    });
 
     // on any change to code the server is going to broadcast this message
 
@@ -113,8 +119,15 @@ const RoomPage = () => {
   const clearOutput = () => {
     setRunResult(""); // Fix missing clear functionality
   };
-  const handleCodeChange = (value) => {
+  const handleCodeChange = async (value) => {
     setCode(value); // Update the state with the new value
+    try {
+      const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/rooms/update-code/${roomId}`, {
+          code: value,
+      });
+    } catch (error) {
+        console.error("Error updating room code:", error);
+    }
     //console.log(code)
     socketRef.current.emit("code-update", {
       roomId: roomId,
