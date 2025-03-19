@@ -1,3 +1,6 @@
+require('dotenv').config();
+
+
 module.exports = {
-    JWT_SECRET : "12345"
+    JWT_SECRET : process.env.JWT_SECRET
 }
