@@ -17,6 +17,12 @@ const CreateJoinPage = () => {
     setPreviousRooms(storedRooms);
   }, []);
 
+  useEffect(() => {
+    if (location.state?.isNewLogin) {
+      toast.success(`Welcome, ${username}!`);
+    }
+  }, [location, username]);
+
   const handleCreateRoom = async () => {
     try {
       const response = await createRoom();
