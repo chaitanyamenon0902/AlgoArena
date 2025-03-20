@@ -1,5 +1,6 @@
 const express=require('express')
 const jwt=require('jsonwebtoken')
+const bcrypt=require('bcrypt')
 const app=express.Router()
 const zod=require('zod')
 const {JWT_SECRET}=require('../config')
@@ -28,10 +29,11 @@ app.post("/signup", async (req,res)=>{
     if(existing_user){
         return res.status(400).send("Username already exists")
     }
+    const hashedPassword=await bcrypt.hash(password,10)//Hashing password
     const user=await User.create({
         username:username,
         email:email,
-        password:password
+        password:hashedPassword
     })
     const userid=user._id;
     const token=jwt.sign({
@@ -58,7 +60,8 @@ app.post("/signin", async (req,res)=>{
     if(!user){
         return res.status(400).send("User not found")
     }
-    if(user.password!==password){
+    const isPasswordValid=await bcrypt.compare(password,user.password)
+    if(!isPasswordValid){
         return res.status(400).send("Invalid Password")
     }
     const token=jwt.sign({
