@@ -8,6 +8,8 @@ import { cpp } from "@codemirror/lang-cpp";
 import { java } from "@codemirror/lang-java";
 import { io } from "socket.io-client";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; 
 
 
 const RoomPage = () => {
@@ -25,6 +27,12 @@ const RoomPage = () => {
     const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/rooms/get-code/${roomId}`);
     setCode(response.data.iniCode);
   }
+  useEffect(() => {
+    toast.success(`Welcome to the room ${roomId}!`);},[roomId]);
+     //toast message(room success)
+  useEffect(() => {
+    toast.info(`Switched to ${language}!`);}, [language]);
+    //toast message(language switch)
 
   useEffect(() => {
     setInitialCode();
@@ -137,6 +145,17 @@ const RoomPage = () => {
 
   return (
     <div className="container">
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <div className="navbar">
         <div className="navLeft">
           <h1 className="title">Algo Arena</h1>

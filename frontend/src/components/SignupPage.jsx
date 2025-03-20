@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../api/axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const SignupPage = () => {
   const [username, setUsername] = useState("");
@@ -10,6 +13,13 @@ const SignupPage = () => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    if (!username || !email || !password) {
+      toast.error("Please fill all fields",{
+        position:"top-right",
+        autoClose:3000,
+      });
+      return;
+    }
 
     try {
       const response = await axios.post("/api/auth/signup", {
@@ -25,7 +35,10 @@ const SignupPage = () => {
       navigate("/create-join"); // Redirect to login page after signup
     } catch (error) {
       console.error("Signup error:", error);
-      alert("Signup failed. Email might already be in use.");
+      toast.error("Signup failed. Email might already be in use.",{
+        position:"top-right",
+        autoClose:3000,
+      });
     }
   };
 
@@ -68,6 +81,7 @@ const SignupPage = () => {
           Login
         </button>
       </div>
+      <ToastContainer />
     </div>
   );
 };
