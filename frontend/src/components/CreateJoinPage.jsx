@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createRoom, joinRoom } from "../api/roomService";
 import "../App.css";
+import { ToastContainer, toast } from "react-toastify"; 
+import "react-toastify/dist/ReactToastify.css"; 
+
 
 const CreateJoinPage = () => {
   const navigate = useNavigate();
@@ -22,9 +25,10 @@ const CreateJoinPage = () => {
       localStorage.setItem("previousRooms", JSON.stringify(updatedRooms));
       setPreviousRooms(updatedRooms);
       navigate(`/room/${roomId}`);
+      toast.success("New room created successfully!");  //toast message(room success)
     } catch (error) {
       console.error("Error creating room:", error);
-      alert("Failed to create room. Please try again.");
+      toast.error("Failed to create room. Please try again.");
     }
   };
 
@@ -39,7 +43,7 @@ const CreateJoinPage = () => {
       navigate(`/room/${roomIdInput}`);
     } catch (error) {
       console.error("Error joining room:", error);
-      alert("Room not found. Please check the room ID.");
+      toast.error("Room not found. Please check the room ID.");
     }
   };
 
@@ -51,6 +55,17 @@ const CreateJoinPage = () => {
 
   return (
     <div className="container">
+    <ToastContainer
+      position="top-center"
+      autoClose={3000}
+      hideProgressBar={false}
+      newestOnTop={true}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      />
       <div className="navbar">
         <div className="navLeft">
           <h1 className="title">Algo Arena</h1>
