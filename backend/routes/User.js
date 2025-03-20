@@ -52,10 +52,10 @@ app.post("/signin", async (req,res)=>{
     if(!success.success){
         return res.status(400).send(success.error.errors)
     }
+    
     const {email,password}=req.body;
     const user=await User.findOne({
         email:email,
-        password:password
     })
     if(!user){
         return res.status(400).send("User not found")
