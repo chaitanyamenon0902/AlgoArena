@@ -15,6 +15,7 @@ const LoginPage = () => {
 
     try {
       const response = await axios.post("/api/auth/signin", { email, password });
+      console.log(response);
       localStorage.setItem("token",response.data.token)
       if (response.data.username) {
         localStorage.setItem("username", response.data.username); // Store username
