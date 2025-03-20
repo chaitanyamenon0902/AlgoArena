@@ -69,7 +69,10 @@ const RoomPage = () => {
   };
 
   const handleLeaveRoom = () => {
-    navigate("/create-join");
+    toast.success(`You have left the room ${roomId}`);
+    setTimeout(() => {
+      navigate("/create-join"); 
+    }, 1000); // Delay of 1 second
   };
 
   const toggleUserMenu = () => {
