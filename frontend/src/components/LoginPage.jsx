@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../api/axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -24,7 +27,28 @@ const LoginPage = () => {
       }
     } catch (error) {
       console.error("Login error:", error);
-      alert("Invalid email or password");
+      if(error.response){
+        console.log("Error response data:",error.response.data);
+        console.log("Error response status:",error.response.status);
+        let errorMessage="Login failed. Please check your credentials.";
+        if(typeof error.response.data==="string"){
+          errorMessage=error.response.data;
+        }else if (typeof error.response.data==="object"){
+          errorMessage=error.response.data.message|| errorMessage;
+        }
+        if(errorMessage.toLowerCase().includes("user not found")){
+          toast.error("New user?Sign up first!",{
+            position:"top-right",
+            autoClose:3000,
+          });
+        }
+        else{
+          toast.error(errorMessage,{
+            position:"top-right",
+            autoClose:3000,
+          });
+        }
+      }
     }
   };
 
@@ -59,6 +83,7 @@ const LoginPage = () => {
           SignUp
         </button>
       </div>
+      <ToastContainer />
     </div>
   );
 };
